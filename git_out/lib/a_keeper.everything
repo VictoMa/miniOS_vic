@@ -1,0 +1,37 @@
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+
+	mov	dx,ss
+	mov	ds,dx
+	mov	es,dx
+
+	mov	esi,esp
+
+	inc     dword [k_reenter]           	;k_reenter++;
+    cmp     dword [k_reenter], 0        	;if(k_reenter ==0)
+    jne     .1                          	;{
+    mov     esp, stackTop               	;  mov esp, StackTop <--切换到内核栈
+    push    restart                     	;  push restart
+    jmp     [esi + RETADR - P_STACKBASE]	;  return;
+.1:                                         ;} else { 已经在内核栈，不需要再切换
+    push    restart_reenter             	;  push restart_reenter
+    jmp     [esi + RETADR - P_STACKBASE]	;  return;
+                                            ;}
+	in	al, INT_M_CTL21	; `.
+	or	al, (1 << %1)		;  | 屏蔽当前中断
+	out	INT_M_CTL21, al	; /
+	mov	al, EOI			; `. 置EOI位
+	out	INT_M_CTL20, al		; /
+	sti	; CPU在响应中断的过程中会自动关中断，这句之后就允许响应新的中断
+	push	%1			; `.
+	call	[irqTable + 4 * %1]	;  | 中断处理程序
+	pop	ecx			; /
+	cli
+	in	al, INT_M_CTL21	; `.
+	and	al, ~(1 << %1)		;  | 恢复接受当前中断
+	out	INT_M_CTL21, al	; /
+	ret
+
