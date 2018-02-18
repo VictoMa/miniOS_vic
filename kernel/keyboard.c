@@ -162,6 +162,9 @@ PUBLIC void keyboardRead(TTY *p_tty)
         // DispStr("stand:");
         // DispInt(PRINTSCREEN);
 
+
+
+
         // another if condition!!,logic mistake
 
         if ((realKey != PAUSEBREAK) && (realKey != PRINTSCREEN)) //deal with the simpler ones
@@ -227,6 +230,7 @@ PUBLIC void keyboardRead(TTY *p_tty)
             {
                 int rawCode = realKey & MASK_RAW;
 
+
                 //DispStr("UP:");DispInt(UP);DispStr("rawcode:");DispInt(rawCode);DispStr("realkey:");DispInt(realKey);DispStr("    ");
 
                 realKey |= shift_l ? FLAG_SHIFT_L : 0;
@@ -239,6 +243,7 @@ PUBLIC void keyboardRead(TTY *p_tty)
                 //char output[2]={0,0};
                 //output[0]=realKey;
                 // DispStr(output);
+                //DispInt(realKey);
 
                 rawCode = realKey & MASK_RAW;
 

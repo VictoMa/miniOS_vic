@@ -182,10 +182,4 @@ PUBLIC u32 seg2phys(u16 seg)
 {
 	Descriptor* p_dest = &gdt[seg >> 3];
 	return (p_dest->baseHigh<<24 | p_dest->baseMid<<16 | p_dest->baseLow);
-<<<<<<< HEAD
 }
-
-
-=======
-}
->>>>>>> 1cb9241c48ef86eaf5cf8803fb1e2c4eacaab1d0

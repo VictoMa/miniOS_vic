@@ -390,11 +390,18 @@
 /************************ tty  *******************************/
 #define TTY_IN_BYTES  256
 
-#define NR_TTY   1			//number of consoles & tty
+#define NR_TTY   2			//number of consoles & tty
 #define NR_CONSOLES NR_TTY
 
 #define DEFAULT_CHAR_COLOR	0x07	/* 0000 0111 黑底白字 */
 
+
+
+#define DIRECTION_UP 1
+#define DIRECTION_DOWN 2
+#define SCREEN_HEIGHT 15
+#define SCREEN_WIDTH 80
+#define SCREEN_SIZE (SCREEN_HEIGHT*SCREEN_WIDTH)
 
 
 
