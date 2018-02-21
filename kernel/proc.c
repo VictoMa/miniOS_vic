@@ -14,7 +14,7 @@ void schedule()
     {
         while(!greatestTick)
         {
-            for(p=procTable;p<procTable+NR_TASK;p++)
+            for(p=procTable;p<procTable+NR_TASK+NR_PROCESS;p++)
             {
                 if(p->ticks>greatestTick)
                 {
@@ -25,7 +25,7 @@ void schedule()
             //比较指针的值，对特定的进程赋值，也可以吧
             if(!greatestTick)
             {
-                for(p = procTable;p<procTable+NR_TASK;p++)
+                for(p = procTable;p<procTable+NR_TASK+NR_PROCESS;p++)
                 {
                     p->ticks = p->priority;
                 }

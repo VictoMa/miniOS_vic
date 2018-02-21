@@ -18,14 +18,19 @@
  * *****************/
 
 
-PUBLIC PCB  procTable[NR_TASK];
+PUBLIC PCB  procTable[NR_TASK+NR_PROCESS];
 PUBLIC char taskStack[STACK_SIZE_TOTAL];
 
 
 //the task table
 PUBLIC Task taskTable[NR_TASK] = 
 {
-    {taskTTY,STACK_SIZE_TASK_TTY,"TTY"},
+    {taskTTY,STACK_SIZE_TASK_TTY,"TTY"}
+};
+
+
+PUBLIC Task userProcessTable[NR_PROCESS] = 
+{
     {TestA,STACK_SIZE_TESTA,"TEST___A"},
     {TestB,STACK_SIZE_TESTB,"TEST__B"},
     {TestC,STACK_SIZE_TESTC,"TEST__C"}

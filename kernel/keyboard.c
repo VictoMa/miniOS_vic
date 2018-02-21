@@ -186,20 +186,24 @@ PUBLIC void keyboardRead(TTY *p_tty)
             //the row is in fact the index of the char in the keymap
             //when use in this way => keymapRow[column]
             //it is compiled into the form 'pointer+offset'
-            //which equals to the 2 dim way:  keymap[row][column]
+            //which equals to the 2 dimention way:  keymap[row][column]
             keymapRow = &keymap[(scanCode & KEYMAP_MASK) * MAP_COLS]; //row
                                                                       //           DispStr("row:");DispInt((keymapRow-keymap)/3);DispStr("   ");
             column = 0;                                               //column
 
-            int caps = shift_l||shift_r;
-            if(caps_lock)
-            {//if capslock pressed
-                if((*keymapRow>='a')&&(*keymapRow<='z'))
+            int caps = shift_l || shift_r;
+            if (caps_lock)
+            { //if capslock pressed
+                if ((*keymapRow >= 'a') && (*keymapRow <= 'z'))
                 {
-                    caps=!caps;
+                    caps = !caps;
                 }
             }
-            //shift ones also the caps ones in column 1 
+            if (caps)
+            {
+                column = 1;
+            }
+            //shift ones also the caps ones in column 1
             if (shift_l || shift_r)
             {
                 column = 1;
@@ -237,14 +241,106 @@ PUBLIC void keyboardRead(TTY *p_tty)
             case ALT_R:
                 alt_l = makeORbreak;
                 break;
+            case CAPS_LOCK:
+                if (makeORbreak)
+                {
+                    caps_lock = !caps_lock;
+                    setLED();
+                }
+            case NUM_LOCK:
+                if (makeORbreak)
+                {
+                    num_lock = !num_lock;
+                    setLED();
+                }
+            case SCROLL_LOCK:
+                if (makeORbreak)
+                {
+                    scroll_lock = !scroll_lock;
+                    setLED();
+                }
             default:
                 break;
             }
 
             if (makeORbreak) //make , display
             {
-                int rawCode = realKey & MASK_RAW;
 
+                int pad = 0;
+                //int rawCode = realKey & MASK_RAW;
+                if ((realKey >= PAD_SLASH) && (realKey <= PAD_9))
+                {
+                    pad = 1;
+                    switch (realKey)
+                    {
+                    case PAD_SLASH:
+                        realKey = '/';
+                        break;
+                    case PAD_STAR:
+                        realKey = '*';
+                        break;
+                    case PAD_MINUS:
+                        realKey = '-';
+                        break;
+                    case PAD_PLUS:
+                        realKey = '+';
+                        break;
+                    case PAD_ENTER:
+                        realKey = ENTER;
+                        break;
+                    default:
+                        if (num_lock &&
+                            (realKey >= PAD_0) &&
+                            (realKey <= PAD_9))
+                        {
+                            realKey = realKey - PAD_0 + '0';
+                        }
+                        else if (num_lock &&
+                                 (realKey == PAD_DOT))
+                        {
+                            realKey = '.';
+                        }
+                        else
+                        {
+                            switch (realKey)
+                            {
+                            case PAD_HOME:
+                                realKey = HOME;
+                                break;
+                            case PAD_END:
+                                realKey = END;
+                                break;
+                            case PAD_PAGEUP:
+                                realKey = PAGEUP;
+                                break;
+                            case PAD_PAGEDOWN:
+                                realKey = PAGEDOWN;
+                                break;
+                            case PAD_INS:
+                                realKey = INSERT;
+                                break;
+                            case PAD_UP:
+                                realKey = UP;
+                                break;
+                            case PAD_DOWN:
+                                realKey = DOWN;
+                                break;
+                            case PAD_LEFT:
+                                realKey = LEFT;
+                                break;
+                            case PAD_RIGHT:
+                                realKey = RIGHT;
+                                break;
+                            case PAD_DOT:
+                                realKey = DELETE;
+                                break;
+                            default:
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
                 //DispStr("UP:");DispInt(UP);DispStr("rawcode:");DispInt(rawCode);DispStr("realkey:");DispInt(realKey);DispStr("    ");
 
                 realKey |= shift_l ? FLAG_SHIFT_L : 0;
@@ -253,13 +349,13 @@ PUBLIC void keyboardRead(TTY *p_tty)
                 realKey |= ctrl_r ? FLAG_CTRL_R : 0;
                 realKey |= alt_l ? FLAG_ALT_L : 0;
                 realKey |= alt_r ? FLAG_ALT_R : 0;
-
+                realKey |= pad ? FLAG_PAD : 0;
                 //char output[2]={0,0};
                 //output[0]=realKey;
                 // DispStr(output);
                 //DispInt(realKey);
 
-                rawCode = realKey & MASK_RAW;
+                //rawCode = realKey & MASK_RAW;
 
                 //               DispStr("UP:");DispInt(UP);DispStr("rawcode:");DispInt(rawCode);DispStr("    ");
                 //               DispStr("process     ");
@@ -297,16 +393,14 @@ PRIVATE u8 getByteFromKeyboardIn()
     return scanCode;
 }
 
-
 //wait until the 8042 buffer is empty
 PRIVATE void keyboardWait()
-{  
+{
     u8 keyboardStat;
     do
     {
         keyboardStat = inByte(KB_CMD);
-    }while(keyboardStat & 0x02);
-    
+    } while (keyboardStat & 0x02);
 }
 
 //wait the keyboard ACK
@@ -316,19 +410,17 @@ PRIVATE void keyboardACK()
     do
     {
         kb_in = inByte(KB_DATA);
-    }while(kb_in=!KB_ACK);//###
-
+    } while (kb_in = !KB_ACK); //###
 }
 PRIVATE void setLED()
 {
-    u8 led=(caps_lock<<2)|(num_lock<<1)|scroll_lock;
-
+    u8 led = (caps_lock << 2) | (num_lock << 1) | scroll_lock;
 
     keyboardWait();
-    outByte(KB_DATA,LED_CODE);
+    outByte(KB_DATA, LED_CODE);
     keyboardACK();
 
     keyboardWait();
-    outByte(KB_DATA,led);
+    outByte(KB_DATA, led);
     keyboardACK();
 }

@@ -216,7 +216,8 @@
 /************************** process ****************************/
 //about process
 
-#define NR_TASK 4           //number of tasks
+#define NR_TASK 1           //number of tasks
+#define NR_PROCESS 3
 
 //about testX
 #define STACK_SIZE_TESTA    0x8000

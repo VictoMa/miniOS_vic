@@ -52,6 +52,7 @@ EXTERN int no_schedule;
 extern PCB  procTable[];
 extern char taskStack[];
 extern Task taskTable[];
+extern Task userProcessTable[];
 extern irqHandler irqTable[];
 extern sysCall syscallTable[];
 

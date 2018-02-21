@@ -111,7 +111,7 @@ PUBLIC	void	initProtect()
 	PCB* p_proc = procTable;
 	u16 selector_ldt = INDEX_LDT_FIRST <<3 ;
 
-	for(i=0;i<NR_TASK;i++)
+	for(i=0;i<NR_TASK+NR_PROCESS;i++)
 	{
 		initDescriptor(&gdt[selector_ldt>>3],
 		vir2phys(seg2phys(SELECTOR_KERNEL_DS), procTable[i].ldt),
