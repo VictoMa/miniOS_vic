@@ -6,8 +6,6 @@
 #define TTY_FIRST (ttyTable)
 #define TTY_END (ttyTable + NR_TTY)
 
-
-
 //static funcs about display
 PRIVATE void setCursor(unsigned int position);
 PRIVATE void ttyRead(TTY *p_tty);
@@ -15,6 +13,8 @@ PRIVATE void ttyWrite(TTY *p_tty);
 PRIVATE void initTTY(TTY *p_tty);
 PRIVATE void scrollUp();
 PRIVATE void scrollScreen();
+PRIVATE void outKey(TTY *p_tty, u32 realKey);
+PRIVATE void flush(Console *p_cons);
 
 //int testCount = 0;
 
@@ -52,16 +52,7 @@ PUBLIC void vga_processKey(TTY *p_tty, u32 realKey)
     {
         // DispInt(realKey);
         // outPut[0] = realKey & 0xFF;
-        if (p_tty->in_buf_count < TTY_IN_BYTES)
-        {
-            *(p_tty->p_in_head) = realKey;
-            p_tty->p_in_head++;
-            if (p_tty->p_in_head == p_tty->in_buf + TTY_IN_BYTES)
-            {
-                p_tty->p_in_head = p_tty->in_buf;
-            }
-            p_tty->in_buf_count++;
-        }
+        outKey(p_tty, realKey);
     }
     else
     {
@@ -74,26 +65,27 @@ PUBLIC void vga_processKey(TTY *p_tty, u32 realKey)
             if ((realKey & FLAG_SHIFT_L) || (realKey & FLAG_SHIFT_R))
             {
                 //scrollUp();
-                scrollScreen(p_tty->p_console,DIRECTION_UP);
+                scrollScreen(p_tty->p_console, DIRECTION_UP);
             }
             break;
         case DOWN:
             if ((realKey & FLAG_SHIFT_L) || (realKey & FLAG_SHIFT_R))
             {
-                scrollScreen(p_tty->p_console,DIRECTION_DOWN);
+                scrollScreen(p_tty->p_console, DIRECTION_DOWN);
             }
             break;
+        case ENTER:
+            outKey(p_tty,'\n');
+            break;
+        case BACKSPACE:
+            outKey(p_tty,'\b');
+            break;
+
+        //select console
         case F1:
         case F2:
-            //case F3:
-            //case F4:
-            //case F5:
-            //case F6:
-            //case F7:
-            //case F8:
             if ((realKey & FLAG_SHIFT_L) || (realKey & FLAG_SHIFT_L))
             {
-                //##debug here
                 //outChar(p_tty->p_console, rawCode - F6 + '0');
                 selectConsole(rawCode - F1);
             }
@@ -188,12 +180,47 @@ PUBLIC void outChar(Console *p_cons, char ch)
 {
     u8 *p_video_mem = (u8 *)(V_MEM_BASE + p_cons->currentCursor * 2); //the vga op is in WORD
 
-    *p_video_mem++ = ch;                 //write raw byte to video mem to display
-    *p_video_mem++ = DEFAULT_CHAR_COLOR; //the high byte
+    //##startAddr maybe the memoryAddr????
+    switch (ch)
+    {
+    //still have more than one line in the current console of gs mem
+    case '\n':
+        if ((p_cons->currentCursor < (p_cons->memoryAddr + p_cons->memLimit - SCREEN_WIDTH)))
+        {
+            //move to the begining of next line
+            //
+            p_cons->currentCursor = p_cons->memoryAddr + SCREEN_WIDTH *
+              ((p_cons->currentCursor - p_cons->memoryAddr) / SCREEN_WIDTH + 1);
+        }
+        break;
+    case '\b':
+        //still have chars in current console
+        if (p_cons->currentCursor > p_cons->memoryAddr)
+        {
+            p_cons->currentCursor--;
+            *(--p_video_mem) = DEFAULT_CHAR_COLOR;
+            *(--p_video_mem) = ' ';
+        }
+        break;
 
-    p_cons->currentCursor++;
+    default:
+        if (p_cons->currentCursor < p_cons->startAddr + p_cons->memLimit)
+        {
 
-    setCursor(p_cons->currentCursor);
+            *p_video_mem++ = ch;                 //write raw byte to video mem to display
+            *p_video_mem++ = DEFAULT_CHAR_COLOR; //the high byte
+
+            p_cons->currentCursor++;
+        }
+        break;
+    }
+
+    //if current console is full,scroll screen
+    while (p_cons->currentCursor >= p_cons->startAddr+SCREEN_SIZE)
+    {
+        scrollScreen(p_cons,DIRECTION_DOWN);
+    }
+    flush(p_cons);
 }
 
 PUBLIC void selectConsole(int indexOfConsole) //console from 0 ~ NR_CONSOLES-1
@@ -254,7 +281,6 @@ PUBLIC void initConsole(TTY *p_tty)
     }
 }
 
-
 /*
 |           |     ->high addr
 |start addr |
@@ -266,30 +292,49 @@ PUBLIC void initConsole(TTY *p_tty)
 |           |
 |           |    ->low addr   =>limit
 */
-PRIVATE void scrollScreen(Console* p_cons,int direction)
+PRIVATE void scrollScreen(Console *p_cons, int direction)
 {
     //when UP,the start addr should move to the lower addr
-    if(direction == DIRECTION_UP)
+    if (direction == DIRECTION_UP)
     {
-        if(p_cons->startAddr>p_cons->memoryAddr) //still have something , not displayed in current console
+        if (p_cons->startAddr > p_cons->memoryAddr) //still have something , not displayed in current console
         {
-            p_cons->startAddr-=SCREEN_WIDTH;
+            p_cons->startAddr -= SCREEN_WIDTH;
         }
     }
     //when DOWN , move to higher addr
-    else if(direction == DIRECTION_DOWN)
+    else if (direction == DIRECTION_DOWN)
     {
         //the bottom of current console is above the limit of the gs mem
-        if((p_cons->startAddr+SCREEN_SIZE)<(p_cons->memoryAddr+p_cons->memLimit))
+        if ((p_cons->startAddr + SCREEN_SIZE) < (p_cons->memoryAddr + p_cons->memLimit))
         {
-            p_cons->startAddr+=SCREEN_WIDTH;
+            p_cons->startAddr += SCREEN_WIDTH;
         }
     }
     else
     {
         ;
     }
+    flush(p_cons);
 
-    setVideoStartAddr(p_cons->startAddr);
+}
+
+PRIVATE void outKey(TTY *p_tty, u32 realKey)
+{
+    if (p_tty->in_buf_count < TTY_IN_BYTES)
+    {
+        *(p_tty->p_in_head) = realKey;
+        p_tty->p_in_head++;
+        if (p_tty->p_in_head == p_tty->in_buf + TTY_IN_BYTES)
+        {
+            p_tty->p_in_head = p_tty->in_buf;
+        }
+        p_tty->in_buf_count++;
+    }
+}
+
+PRIVATE void flush(Console *p_cons)
+{
     setCursor(p_cons->currentCursor);
+    setVideoStartAddr(p_cons->startAddr);
 }

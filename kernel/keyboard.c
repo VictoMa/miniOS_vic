@@ -20,6 +20,10 @@ PRIVATE int num_lock;    /* Num Lock	 */
 PRIVATE int scroll_lock; /* Scroll Lock	 */
 PRIVATE int column;
 
+PRIVATE void keyboardWait();
+PRIVATE void keyboardACK();
+PRIVATE void setLED();
+
 PUBLIC void initKeyboard()
 {
     keyboardIn.count = 0;
@@ -28,6 +32,12 @@ PUBLIC void initKeyboard()
     shift_l = shift_r = 0;
     alt_l = alt_r = 0;
     ctrl_l = ctrl_r = 0;
+
+    caps_lock = 0;   /* Caps Lock	 */
+    num_lock = 1;    /* Num Lock	 */
+    scroll_lock = 0; /* Scroll Lock	 */
+
+    setLED();
 
     setIrqHandler(KEYBOARD_IRQ, keyboardHandler);
     enableIRQ(KEYBOARD_IRQ);
@@ -87,9 +97,9 @@ PUBLIC void keyboardRead(TTY *p_tty)
         //DispStr("count:");DispInt(keyboardIn.count);
         scanCode = getByteFromKeyboardIn();
 
- //       DispStr("ScanCode:");
- //       DispInt(scanCode);
-  //      DispStr("    ");
+        //       DispStr("ScanCode:");
+        //       DispInt(scanCode);
+        //      DispStr("    ");
         //process the already read char
 
         if (scanCode == 0xE1) //control char  => pausebreak
@@ -162,9 +172,6 @@ PUBLIC void keyboardRead(TTY *p_tty)
         // DispStr("stand:");
         // DispInt(PRINTSCREEN);
 
-
-
-
         // another if condition!!,logic mistake
 
         if ((realKey != PAUSEBREAK) && (realKey != PRINTSCREEN)) //deal with the simpler ones
@@ -184,7 +191,15 @@ PUBLIC void keyboardRead(TTY *p_tty)
                                                                       //           DispStr("row:");DispInt((keymapRow-keymap)/3);DispStr("   ");
             column = 0;                                               //column
 
-            //shift ones in column 1
+            int caps = shift_l||shift_r;
+            if(caps_lock)
+            {//if capslock pressed
+                if((*keymapRow>='a')&&(*keymapRow<='z'))
+                {
+                    caps=!caps;
+                }
+            }
+            //shift ones also the caps ones in column 1 
             if (shift_l || shift_r)
             {
                 column = 1;
@@ -229,7 +244,6 @@ PUBLIC void keyboardRead(TTY *p_tty)
             if (makeORbreak) //make , display
             {
                 int rawCode = realKey & MASK_RAW;
-
 
                 //DispStr("UP:");DispInt(UP);DispStr("rawcode:");DispInt(rawCode);DispStr("realkey:");DispInt(realKey);DispStr("    ");
 
@@ -281,4 +295,40 @@ PRIVATE u8 getByteFromKeyboardIn()
     enableINT();
 
     return scanCode;
+}
+
+
+//wait until the 8042 buffer is empty
+PRIVATE void keyboardWait()
+{  
+    u8 keyboardStat;
+    do
+    {
+        keyboardStat = inByte(KB_CMD);
+    }while(keyboardStat & 0x02);
+    
+}
+
+//wait the keyboard ACK
+PRIVATE void keyboardACK()
+{
+    u8 kb_in;
+    do
+    {
+        kb_in = inByte(KB_DATA);
+    }while(kb_in=!KB_ACK);//###
+
+}
+PRIVATE void setLED()
+{
+    u8 led=(caps_lock<<2)|(num_lock<<1)|scroll_lock;
+
+
+    keyboardWait();
+    outByte(KB_DATA,LED_CODE);
+    keyboardACK();
+
+    keyboardWait();
+    outByte(KB_DATA,led);
+    keyboardACK();
 }
