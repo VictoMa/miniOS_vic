@@ -48,10 +48,3 @@ SELECTOR_TSS		equ		0x20	; TSS
 SELECTOR_KERNEL_CS	equ		SELECTOR_FLAT_C
 
 
-;use in file syscall.asm
-
-
-
-
-_NR_syscall_get_ticks   equ 0               ;must keep with global.c
-INT_VECTOR_SYS_CALL     equ 0x90

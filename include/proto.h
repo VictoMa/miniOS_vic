@@ -16,6 +16,7 @@ PUBLIC void enableIRQ(int irq);
 
 PUBLIC void disableINT();
 PUBLIC void enableINT();
+PUBLIC int strLen(char* p_str);
 
 /********************* kernel/protect.c ******************/
 PUBLIC void initProtect();
@@ -31,6 +32,7 @@ PUBLIC void spuriousIrq(int irq);
 
 //syscall about
 PUBLIC int sys_getTicks();
+
 PUBLIC void milliDelay(int milliSec);
 
 PUBLIC void init8253();
@@ -38,6 +40,14 @@ PUBLIC void init8253();
 /**************** lib/lib.c ***************/
 PUBLIC void delay(int time);
 PUBLIC void DispInt(int number);
+
+PUBLIC char* itoa(char* str, int num);
+
+/**************** lib/io.c ***************/
+PUBLIC int printf(const char *fmt, ...);
+PUBLIC int vsprintf(char *buf, const char *fmt, va_list args);
+
+PUBLIC int sys_write(char *buf, int len, PCB *p_proc);
 
 /********************** kernel/kernel.asm *******************/
 void restart();
@@ -86,8 +96,9 @@ void schedule();
 
 /********************** kernel/syscall.asm *******************/
 
-void sys_Call();
-void getTicks();
+PUBLIC void sys_Call();
+PUBLIC void getTicks();
+PUBLIC void write(char *buf, int len);
 
 /********************** kernel/keyboard.c *******************/
 
@@ -107,5 +118,7 @@ PUBLIC void selectConsole(int indexOfConsole);
 PUBLIC void setVideoStartAddr(u32 addr);
 
 PUBLIC void initConsole(TTY *p_tty);
+
+PUBLIC void ttyWriteChar(TTY *p_tty, char *buf, int len);
 //PUBLIC void ttyRead();
 //PUBLIC void ttyWrite(TTY* p_tty);

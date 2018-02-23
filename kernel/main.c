@@ -36,6 +36,7 @@ void kernel_main()
         }
         strCpy(p_proc->pname, p_task_proc->name);
         p_proc->pid = i;
+        p_proc->nr_tty = 0;
 
         p_proc->ldtSel = selector_ldt;
 
@@ -72,6 +73,10 @@ void kernel_main()
     procTable[2].ticks = procTable[2].priority = 10;
     procTable[3].ticks = procTable[3].priority = 10;
 
+    procTable[1].nr_tty = 0;
+    procTable[2].nr_tty = 1;
+    procTable[3].nr_tty = 1;
+
     //debug here
     testCount = 0;
 
@@ -99,9 +104,8 @@ void TestA()
     //int i = 0;
     while (1)
     {
-        //DispStr("A.");
-        // delay(10);
-        milliDelay(10);
+        printf("<Ticks:%x>", sys_getTicks());
+        milliDelay(2000);
     }
 }
 
@@ -110,11 +114,9 @@ void TestB()
     //int i = 1000;
     while (1)
     {
-        //DispStr("B.");
-        //DispInt(i++);
-        //DispStr(".");
-        //delay(10);
-        milliDelay(10);
+
+        printf("B");
+        milliDelay(20000);
     }
 }
 
@@ -123,10 +125,8 @@ void TestC()
     //int i = 2000;
     while (1)
     {
-        //DispStr("C.");
-        //DispInt(i++);
-        //DispStr(".");
-        //delay(10);
-        milliDelay(10);
+
+        printf("C");
+        milliDelay(20000);
     }
 }

@@ -338,3 +338,13 @@ PRIVATE void flush(Console *p_cons)
     setCursor(p_cons->currentCursor);
     setVideoStartAddr(p_cons->startAddr);
 }
+
+PUBLIC void ttyWriteChar(TTY *p_tty, char *buf, int len)
+{
+    char *p = buf;
+    int i;
+    for (i = len; i > 0; i--, p++)
+    {
+        outChar(p_tty->p_console, *p);
+    }
+}

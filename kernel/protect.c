@@ -92,7 +92,8 @@ PUBLIC	void	initProtect()
 
 
 	//syscall
-	initDescriptor(INT_VECTOR_SYSCALL,DA_386IGate,sys_Call,PRIVILEGE_USER);
+
+	initIdtDescriptor(INT_VECTOR_SYSCALL,DA_386IGate,sys_Call,PRIVILEGE_USER);
 
 
 	MemSet(&tss,0,sizeof(tss));			//all bit to 0

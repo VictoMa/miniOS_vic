@@ -1,6 +1,5 @@
 
 
-
 /********************************************************
  * vars below are defined in 'global.c'
  * else
@@ -20,12 +19,11 @@
 #define EXTERN
 #endif
 
-
 //cursor
-EXTERN int  Cursor;
+EXTERN int Cursor;
 
-//int re_enter 
-EXTERN u32  k_reenter;
+//int re_enter
+EXTERN u32 k_reenter;
 //gdt & gdt pointer
 EXTERN u8 gdt_ptr[6];
 EXTERN Descriptor gdt[GDT_SIZE];
@@ -38,9 +36,7 @@ EXTERN Descriptor idt[IDT_SIZE];
 EXTERN TSS tss;
 
 //process
-EXTERN PCB* p_proc_ready;
-
-
+EXTERN PCB *p_proc_ready;
 
 //syscall
 
@@ -48,24 +44,20 @@ EXTERN int ticks;
 
 EXTERN int no_schedule;
 
-                                    //these are declarations of vars defined in "global.c"
-extern PCB  procTable[];
+//these are declarations of vars defined in "global.c"
+extern PCB procTable[];
 extern char taskStack[];
 extern Task taskTable[];
 extern Task userProcessTable[];
 extern irqHandler irqTable[];
 extern sysCall syscallTable[];
 
-
 //keyboard & tty
-EXTERN int indexCurrentConsole;    
+EXTERN int indexCurrentConsole;
 extern TTY ttyTable[];
 extern Console consoleTable[];
 
 extern KB_INPUT keyboardIn;
-
-
-
 
 //debug
 

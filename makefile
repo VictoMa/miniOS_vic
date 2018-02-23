@@ -26,7 +26,7 @@ KERNEL 	= kernel.bin
 
 OBJS = kernel/kernel.o lib/slib.o kernel/start.o kernel/main.o kernel/protect.o\
 		kernel/i8259.o kernel/global.o lib/lib.o kernel/proc.o kernel/syscall.o\
-		kernel/keyboard.o kernel/tty.o
+		kernel/keyboard.o kernel/tty.o lib/io.o
 
 .PHONY:everything clean all img realclean
 
@@ -52,7 +52,9 @@ kernel/syscall.o: kernel/syscall.asm kernel/include/sconst.inc
 
 lib/slib.o:lib/slib.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
-lib/lib.o:lib/lib.c include/const.h include/type.h include/const.h include/proto.h include/global.h
+lib/lib.o:lib/lib.c include/const.h include/type.h  include/proto.h include/global.h
+	$(CC) $(CFLAGS) -o $@ $<
+lib/io.o:lib/io.c include/type.h include/const.h include/global.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/start.o: kernel/start.c include/const.h include/type.h include/proto.h include/global.h
@@ -65,12 +67,13 @@ kernel/protect.o: kernel/protect.c include/type.h include/const.h include/proto.
 	$(CC) $(CFLAGS) -o $@ $<
 kernel/global.o:kernel/global.c include/const.h include/global.h include/type.h
 	$(CC) $(CFLAGS) -o $@ $<
-kernel/proc.o: kernel/proc.c include/type.h include/const.h include/global.h include/const.h include/proto.h
+kernel/proc.o: kernel/proc.c include/type.h include/const.h include/global.h  include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
 kernel/keyboard.o: kernel/keyboard.c include/const.h include/proto.h include/type.h
 	$(CC) $(CFLAGS) -o $@ $<
 kernel/tty.o:kernel/tty.c include/type.h include/const.h include/const.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
+
 #####MOD HERE
 #lib/blank.bin:lib/blank.asm
 #	$(ASM) -o $@ $<
