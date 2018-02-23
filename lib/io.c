@@ -8,7 +8,7 @@ PUBLIC int printf(const char *fmt, ...)
     int i;
     char buf[256];
 
-    va_list arg = (va_list)((char *)(&fmt) + 4);
+    va_list arg = (va_list)((char *)(&fmt) + 4); /*4是参数fmt所占堆栈中的大小*/
     i = vsprintf(buf, fmt, arg);
     write(buf, i);
 
@@ -18,10 +18,9 @@ PUBLIC int printf(const char *fmt, ...)
 PUBLIC int vsprintf(char *buf, const char *fmt, va_list args)
 {
     char *p;
-    char tmpBuf[256];
+    char tmp[256];
     va_list p_next_arg = args;
 
-    //get the format
     for (p = buf; *fmt; fmt++)
     {
         if (*fmt != '%')
@@ -29,21 +28,22 @@ PUBLIC int vsprintf(char *buf, const char *fmt, va_list args)
             *p++ = *fmt;
             continue;
         }
-    }
 
-    fmt++;
-    switch (*fmt)
-    {
-    case 'x':
-        itoa(tmpBuf, *((int *)p_next_arg));
-        strCpy(p, tmpBuf);
-        p_next_arg += 4;
-        p += strLen(tmpBuf);
-        break;
-    case 's':
-        break;
-    default:
-        break;
+        fmt++;
+
+        switch (*fmt)
+        {
+        case 'x':
+            itoa(tmp, *((int *)p_next_arg));
+            strCpy(p, tmp);
+            p_next_arg += 4;
+            p += strLen(tmp);
+            break;
+        case 's':
+            break;
+        default:
+            break;
+        }
     }
 
     return (p - buf);
