@@ -26,7 +26,7 @@ KERNEL 	= kernel.bin
 
 OBJS = kernel/kernel.o lib/slib.o kernel/start.o kernel/main.o kernel/protect.o\
 		kernel/i8259.o kernel/global.o lib/lib.o kernel/proc.o kernel/syscall.o\
-		kernel/keyboard.o kernel/tty.o lib/io.o
+		kernel/keyboard.o kernel/tty.o lib/io.o lib/assert.o
 
 .PHONY:everything clean all img realclean
 
@@ -56,7 +56,10 @@ lib/lib.o:lib/lib.c include/const.h include/type.h  include/proto.h include/glob
 	$(CC) $(CFLAGS) -o $@ $<
 lib/io.o:lib/io.c include/type.h include/const.h include/global.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
+lib/assert.o:lib/assert.c include/type.h include/const.h include/proto.h include/global.h
+	$(CC) $(CFLAGS) -o $@ $<
 
+	
 kernel/start.o: kernel/start.c include/const.h include/type.h include/proto.h include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 kernel/main.o: kernel/main.c include/type.h include/const.h include/proto.h include/global.h

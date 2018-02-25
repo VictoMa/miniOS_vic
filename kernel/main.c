@@ -104,7 +104,7 @@ void TestA()
     //int i = 0;
     while (1)
     {
-        printf("<Ticks:%x>", sys_getTicks());
+       // printf("<Ticks:%x>", sys_getTicks());
         milliDelay(2000);
     }
 }
@@ -125,8 +125,9 @@ void TestC()
     //int i = 2000;
     while (1)
     {
-
+        assert(0);
         printf("C");
+        
         milliDelay(20000);
     }
 }

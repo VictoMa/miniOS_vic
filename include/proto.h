@@ -48,6 +48,12 @@ PUBLIC int printf(const char *fmt, ...);
 PUBLIC int vsprintf(char *buf, const char *fmt, va_list args);
 
 PUBLIC int sys_write(char *buf, int len, PCB *p_proc);
+PUBLIC int sprintf(char *buf, const char *fmt, ...);
+
+/**************** lib/assert.c ***************/
+PUBLIC void spin(char *func_name);
+PUBLIC void assertion_failure(char *exp,char *file,char* base_file, int line);
+PUBLIC void panic(const char* fmt, ... );
 
 /********************** kernel/kernel.asm *******************/
 void restart();
@@ -122,3 +128,5 @@ PUBLIC void initConsole(TTY *p_tty);
 PUBLIC void ttyWriteChar(TTY *p_tty, char *buf, int len);
 //PUBLIC void ttyRead();
 //PUBLIC void ttyWrite(TTY* p_tty);
+
+

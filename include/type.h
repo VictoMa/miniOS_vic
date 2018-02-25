@@ -11,6 +11,7 @@ typedef void *sysCall;				 //sysCall p -> void
 									 //which refers to any type of function
 typedef char *va_list;				 //var list
 /*********************unsigned int********************/
+typedef unsigned long long u64; //64bit
 typedef unsigned int u32;   //32bit int
 typedef unsigned short u16; //16bit
 typedef unsigned char u8;   //8bit
@@ -57,6 +58,45 @@ typedef struct s_stackFrame //stackFrame defines the stack while switching task
 	u32 ss;			/* /                                    */
 } StackFrame;
 
+typedef struct mess1
+{
+	int m1i1;
+	int m1i2;
+	int m1i3;
+	int m1i4;
+}Msg1;
+
+typedef struct mess2
+{
+	void *m2p1;
+	void *m2p2;
+	void *m2p3;
+	void *m2p4;
+} Msg2;
+
+typedef struct mess3
+{
+	int m3i1;
+	int m3i2;
+	int m3i3;
+	int m3i4;
+	u64 m3l1;
+	u64 m3l2;
+	void *m3p1;
+	void *m3p2;
+} Msg3;
+
+typedef struct s_message
+{
+	int source;
+	int type;
+	union {
+		struct mess1 m1;
+		struct mess2 m2;
+		struct mess3 m3;
+	} u;
+} Message;
+
 typedef struct s_pcb //PCB
 {
 	StackFrame regs;
@@ -69,6 +109,16 @@ typedef struct s_pcb //PCB
 	int priority;
 
 	int nr_tty;
+
+	int p_flags;
+	Message* p_msg;
+	int p_recvfrom;
+	int p_sendto;
+	int has_int_msg;
+
+
+	struct s_pcb* next_sending;
+	struct s_pcb* q_sending;
 } PCB;
 
 typedef struct s_tss //TSS
@@ -138,5 +188,12 @@ typedef struct s_tty
 
 	Console *p_console; //current console
 } TTY;
+
+
+
+
+
+
+
 
 #endif

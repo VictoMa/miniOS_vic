@@ -114,10 +114,11 @@
 
 
 
-/*************************  LDT size ****************************/
+/*************************  LDT about ****************************/
 #define LDT_SIZE    2
 
-
+#define INDEX_LDT_C             0
+#define INDEX_LDT_RW            1
 /****************************************************************/
 
 
@@ -200,6 +201,21 @@
 //simply add the seg_base and the offset together ???
 #define vir2phys(seg_base, vir)	(u32)(((u32)seg_base) + (u32)(vir))
 
+
+//convert the process pointer to pid
+//for we create process in sequence
+#define proc2pid(x) (x - procTable)
+
+
+#define ASSERT
+#ifdef ASSERT
+void assertion_failure(char *exp, char *file, char *base_file, int line);
+#define assert(exp)  if (exp) ; \
+        else assertion_failure(#exp, __FILE__, __BASE_FILE__, __LINE__)
+#else
+#define assert(exp)
+#endif
+
 /****************************************************************/
 
 
@@ -213,25 +229,68 @@
 
 
 
+
+
+
+
+
+
+
+
+
 /************************** process ****************************/
 //about process
 
 #define NR_TASK 1           //number of tasks
 #define NR_PROCESS 3
 
+#define FIRST_PROC	proc_table[0]
+#define LAST_PROC	proc_table[NR_TASKS + NR_PROCS - 1]
+
+#define INVALID_DRIVER	-20
+#define INTERRUPT	-10
+#define TASK_TTY	0
+#define TASK_SYS	1
+#define TASK_WINCH	2 
+#define TASK_FS	3 
+#define TASK_MM	4 
+#define ANY		(NR_TASKS + NR_PROCS + 10)
+#define NO_TASK		(NR_TASKS + NR_PROCS + 20)
+
+#define SEND		1
+#define RECEIVE		2
+#define SEND_RECV	3	
+
+
+#define SENDING   0x02	/* set when proc trying to send */
+#define RECEIVING 0x04	/* set when proc trying to recv */
+
+#define	STR_DEFAULT_LEN	1024
+
+//magic chars used by `printx' 
+#define MAG_CH_PANIC	'\002'
+#define MAG_CH_ASSERT	'\003'
+
+
+//
+#define	RETVAL		u.m3.m3i1
+
+enum msgType
+{
+	HARD_INT=1,
+	GET_TICKS
+};
+
+
+
 //about testX
 #define STACK_SIZE_TESTA    0x8000
 #define STACK_SIZE_TESTB    0x8000
 #define STACK_SIZE_TESTC    0x8000
 #define STACK_SIZE_TASK_TTY    0x8000
+#define STACK_SIZE_TASK_SYS		0x8000
 
-#define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA*NR_TASK)
-
-
-
-
-
-
+#define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA*(NR_TASK+NR_PROCESS))
 
 /****************************************************************/
 
@@ -396,8 +455,22 @@
 #define NR_TTY   2			//number of consoles & tty
 #define NR_CONSOLES NR_TTY
 
-#define DEFAULT_CHAR_COLOR	0x07	/* 0000 0111 黑底白字 */
+//colors
+#define BLACK   0x0     /* 0000 */
+#define WHITE   0x7     /* 0111 */
+#define RED     0x4     /* 0100 */
+#define GREEN   0x2     /* 0010 */
+#define BLUE    0x1     /* 0001 */
+#define FLASH   0x80    /* 1000 0000 */
+#define BRIGHT  0x08    /* 0000 1000 */
 
+#define DEFAULT_CHAR_COLOR	0x07	
+
+//small macros
+#define	MAKE_COLOR(x,y)	((x<<4) | y) /* MAKE_COLOR(Background,Foreground) */
+
+#define GRAY_CHAR		(MAKE_COLOR(BLACK, BLACK) | BRIGHT)
+#define RED_CHAR		(MAKE_COLOR(BLUE, RED) | BRIGHT)
 
 
 #define DIRECTION_UP 1

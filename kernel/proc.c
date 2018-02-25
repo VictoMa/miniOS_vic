@@ -37,3 +37,9 @@ void schedule()
         no_schedule = 0;
     }
 }
+
+
+PUBLIC int sys_sendrec(int function,int src_dest,Message* m,PCB* p)
+{
+    ;
+}
