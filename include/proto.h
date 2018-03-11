@@ -105,7 +105,7 @@ void schedule();
 PUBLIC void sys_Call();
 PUBLIC void getTicks();
 PUBLIC void write(char *buf, int len);
-
+PUBLIC	int	sendrec(int function, int src_dest, Message* p_msg);
 /********************** kernel/keyboard.c *******************/
 
 PUBLIC void initKeyboard();
@@ -149,3 +149,4 @@ PUBLIC int sys_sendrec(int function, int src_dest, Message *m, PCB *p);
 
 
 PUBLIC void taskSYS();
+PUBLIC int m_getTicks();

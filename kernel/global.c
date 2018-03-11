@@ -25,7 +25,8 @@ PUBLIC char taskStack[STACK_SIZE_TOTAL];
 //the task table
 PUBLIC Task taskTable[NR_TASK] = 
 {
-    {taskTTY,STACK_SIZE_TASK_TTY,"TTY"}
+    {taskTTY,STACK_SIZE_TASK_TTY,"TTY"},
+    {taskSYS,STACK_SIZE_TASK_SYS,"SYS"}
 };
 
 

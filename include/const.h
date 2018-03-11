@@ -241,7 +241,7 @@ void assertion_failure(char *exp, char *file, char *base_file, int line);
 /************************** process ****************************/
 //about process
 
-#define NR_TASK 1           //number of tasks
+#define NR_TASK 2           //number of tasks
 #define NR_PROCESS 3
 
 #define FIRST_PROC	procTable[0]

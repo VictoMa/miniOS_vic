@@ -27,17 +27,11 @@ void schedule()
                 for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
                     if (p->p_flags == 0)
                         p->ticks = p->priority;
-
-                        
+                      
         }
     }
     else
     {
         no_schedule = 0;
     }
-}
-
-PUBLIC int sys_sendrec(int function, int src_dest, Message *m, PCB *p)
-{
-    ;
 }

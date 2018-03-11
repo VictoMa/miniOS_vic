@@ -23,3 +23,12 @@ PUBLIC void taskSYS()
         }
     }
 }
+
+PUBLIC int m_getTicks()
+{
+    Message msg;
+    reset_msg(&msg);
+    msg.type = GET_TICKS;
+    send_recv(SEND_RECV,TASK_SYS,&msg);
+    return msg.RETVAL;
+}

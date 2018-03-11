@@ -8,7 +8,7 @@ INT_VECTOR_SYS_CALL     equ 0x90
                                             ;these number of syscalls
 _NR_syscall_get_ticks   equ 0               ;must keep with global.c
 _NR_syscall_write       equ 1
-
+_NR_syscall_sendRecv    equ 2
 
 
 ;-------------------导入函数----------------
@@ -45,6 +45,13 @@ write:
     int     INT_VECTOR_SYS_CALL
     ret
 
+sendrec:
+	mov	    eax, _NR_syscall_sendRecv
+	mov	    ebx, [esp + 4]	; function
+	mov	    ecx, [esp + 8]	; src_dest
+	mov	    edx, [esp + 12]	; p_msg
+	int	    INT_VECTOR_SYS_CALL
+	ret
 
 
 
