@@ -43,6 +43,8 @@ PUBLIC void DispInt(int number);
 
 PUBLIC char* itoa(char* str, int num);
 
+PUBLIC void *va2la(int pid, void *va);
+PUBLIC int ldt_seg_linear(PCB *p, int idx);
 /**************** lib/io.c ***************/
 PUBLIC int printf(const char *fmt, ...);
 PUBLIC int vsprintf(char *buf, const char *fmt, va_list args);
@@ -135,8 +137,7 @@ PUBLIC void ttyWriteChar(TTY *p_tty, char *buf, int len);
 PUBLIC void reset_msg(Message *p);
 
 
-PUBLIC void *va2la(int pid, void *va);
-PUBLIC int ldt_seg_linear(PCB *p, int idx);
+
 
 
 PUBLIC void dump_proc(PCB *p);

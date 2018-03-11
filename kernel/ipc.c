@@ -109,50 +109,7 @@ PUBLIC int send_recv(int function, int src_dest, Message *msg)
     return ret;
 }
 
-/*****************************************************************************
- *				  ldt_seg_linear
- *****************************************************************************/
-/**
- * <Ring 0~1> Calculate the linear address of a certain segment of a given
- * proc.
- * 
- * @param p   Whose (the proc ptr).
- * @param idx Which (one proc has more than one segments).
- * 
- * @return  The required linear address.
- *****************************************************************************/
-PUBLIC int ldt_seg_linear(PCB *p, int idx)
-{
-    Descriptor *d = &p->ldt[idx];
 
-    return d->baseHigh << 24 | d->baseMid << 16 | d->baseLow;
-}
-
-/*****************************************************************************
- *				  va2la
- *****************************************************************************/
-/**
- * <Ring 0~1> Virtual addr --> Linear addr.
- * 
- * @param pid  PID of the proc whose address is to be calculated.
- * @param va   Virtual address.
- * 
- * @return The linear address for the given virtual address.
- *****************************************************************************/
-PUBLIC void *va2la(int pid, void *va)
-{
-    PCB *p = &procTable[pid];
-
-    u32 seg_base = ldt_seg_linear(p, INDEX_LDT_RW);
-    u32 la = seg_base + (u32)va;
-
-    if (pid < NR_TASK + NR_PROCESS)
-    {
-        assert(la == (u32)va);
-    }
-
-    return (void *)la;
-}
 
 /*****************************************************************************
  *                                reset_msg
@@ -280,7 +237,7 @@ PRIVATE int msg_send(PCB *current, int dest, Message *m)
         assert(p_dest->p_msg);
         assert(m);
 
-        phys_copy(va2la(dest, p_dest->p_msg),
+        MemCopy(va2la(dest, p_dest->p_msg),
                   va2la(proc2pid(sender), m),
                   sizeof(Message));
         p_dest->p_msg = 0;
@@ -370,7 +327,7 @@ PRIVATE int msg_receive(PCB *current, int src, Message *m)
         msg.source = INTERRUPT;
         msg.type = HARD_INT;
         assert(m);
-        phys_copy(va2la(proc2pid(p_who_wanna_recv), m), &msg,
+        MemCopy(va2la(proc2pid(p_who_wanna_recv), m), &msg,
                   sizeof(Message));
 
         p_who_wanna_recv->has_int_msg = 0;
@@ -472,7 +429,7 @@ PRIVATE int msg_receive(PCB *current, int src, Message *m)
         assert(m);
         assert(p_from->p_msg);
         /* copy the message */
-        phys_copy(va2la(proc2pid(p_who_wanna_recv), m),
+        MemCopy(va2la(proc2pid(p_who_wanna_recv), m),
                   va2la(proc2pid(p_from), p_from->p_msg),
                   sizeof(Message));
 

@@ -22,6 +22,7 @@ extern p_proc_ready
 ;-------------------导出----------------
 global getTicks
 global write
+global sendrec
 
 global sys_Call
 
