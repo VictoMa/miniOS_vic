@@ -111,8 +111,8 @@ void TestA()
     //int i = 0;
     while (1)
     {
-        // printf("<Ticks:%x>", sys_getTicks());
-        printf("A");
+        printf("<Ticks:%x>", m_getTicks());
+        //printf("A");
         milliDelay(2000);
     }
 }
