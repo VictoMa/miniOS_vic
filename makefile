@@ -26,7 +26,7 @@ KERNEL 	= kernel.bin
 
 OBJS = kernel/kernel.o lib/slib.o kernel/start.o kernel/main.o kernel/protect.o\
 		kernel/i8259.o kernel/global.o lib/lib.o kernel/proc.o kernel/syscall.o\
-		kernel/keyboard.o kernel/tty.o lib/io.o lib/assert.o
+		kernel/keyboard.o kernel/tty.o lib/io.o lib/assert.o kernel/ipc.o kernel/systask.o
 
 .PHONY:everything clean all img realclean
 
@@ -76,7 +76,10 @@ kernel/keyboard.o: kernel/keyboard.c include/const.h include/proto.h include/typ
 	$(CC) $(CFLAGS) -o $@ $<
 kernel/tty.o:kernel/tty.c include/type.h include/const.h include/const.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
-
+kernel/ipc.o:kernel/ipc.c include/type.h include/const.h include/const.h include/proto.h
+	$(CC) $(CFLAGS) -o $@ $<
+kernel/systask.o:kernel/systask.c include/type.h include/const.h include/const.h include/proto.h
+	$(CC) $(CFLAGS) -o $@ $<
 #####MOD HERE
 #lib/blank.bin:lib/blank.asm
 #	$(ASM) -o $@ $<
