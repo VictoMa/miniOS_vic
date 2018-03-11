@@ -244,8 +244,8 @@ void assertion_failure(char *exp, char *file, char *base_file, int line);
 #define NR_TASK 1           //number of tasks
 #define NR_PROCESS 3
 
-#define FIRST_PROC	proc_table[0]
-#define LAST_PROC	proc_table[NR_TASKS + NR_PROCS - 1]
+#define FIRST_PROC	procTable[0]
+#define LAST_PROC	procTable[NR_TASK + NR_PROCESS - 1]
 
 #define INVALID_DRIVER	-20
 #define INTERRUPT	-10
@@ -254,8 +254,8 @@ void assertion_failure(char *exp, char *file, char *base_file, int line);
 #define TASK_WINCH	2 
 #define TASK_FS	3 
 #define TASK_MM	4 
-#define ANY		(NR_TASKS + NR_PROCS + 10)
-#define NO_TASK		(NR_TASKS + NR_PROCS + 20)
+#define ANY		(NR_TASK + NR_PROCESS + 10)
+#define NO_TASK		(NR_TASK + NR_PROCESS + 20)
 
 #define SEND		1
 #define RECEIVE		2

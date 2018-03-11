@@ -3,33 +3,32 @@
 #include "const.h"
 #include "proto.h"
 
-
-
-
 void schedule()
 {
-    PCB* p;
+    PCB *p;
     int greatestTick = 0;
     if (!no_schedule)
     {
-        while(!greatestTick)
+        while (!greatestTick)
         {
-            for(p=procTable;p<procTable+NR_TASK+NR_PROCESS;p++)
+            for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
             {
-                if(p->ticks>greatestTick)
+                if (p->p_flags == 0)
                 {
-                    greatestTick=p->ticks;
-                    p_proc_ready=p;
+                    if (p->ticks > greatestTick)
+                    {
+                        greatestTick = p->ticks;
+                        p_proc_ready = p;
+                    }
                 }
             }
-            //比较指针的值，对特定的进程赋值，也可以吧
-            if(!greatestTick)
-            {
-                for(p = procTable;p<procTable+NR_TASK+NR_PROCESS;p++)
-                {
-                    p->ticks = p->priority;
-                }
-            }
+
+            if (!greatestTick)
+                for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
+                    if (p->p_flags == 0)
+                        p->ticks = p->priority;
+
+                        
         }
     }
     else
@@ -38,8 +37,7 @@ void schedule()
     }
 }
 
-
-PUBLIC int sys_sendrec(int function,int src_dest,Message* m,PCB* p)
+PUBLIC int sys_sendrec(int function, int src_dest, Message *m, PCB *p)
 {
     ;
 }

@@ -130,3 +130,22 @@ PUBLIC void ttyWriteChar(TTY *p_tty, char *buf, int len);
 //PUBLIC void ttyWrite(TTY* p_tty);
 
 
+/********************** kernel/ipc.c *******************/
+
+PUBLIC void reset_msg(Message *p);
+
+
+PUBLIC void *va2la(int pid, void *va);
+PUBLIC int ldt_seg_linear(PCB *p, int idx);
+
+
+PUBLIC void dump_proc(PCB *p);
+PUBLIC void dump_msg(const char *title, Message *m);
+
+
+PUBLIC int send_recv(int function, int src_dest, Message *msg);
+PUBLIC int sys_sendrec(int function, int src_dest, Message *m, PCB *p);
+/********************** kernel/systask.c *******************/
+
+
+PUBLIC void taskSYS();
