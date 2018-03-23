@@ -40,8 +40,8 @@ PUBLIC Task userProcessTable[NR_PROCESS] =
 
 PUBLIC intHandler irqTable[NR_IRQ];
 
-PUBLIC sysCall syscallTable[NR_SYSCALL] = {sys_getTicks,sys_write};
-
+PUBLIC sysCall syscallTable[NR_SYSCALL] = {sys_sendrec,sys_printx};
+//PUBLIC sysCall syscallTable[NR_SYSCALL] = {sys_sendrec,sys_write};
 
 PUBLIC KB_INPUT keyboardIn;
 

@@ -50,8 +50,12 @@ PUBLIC int printf(const char *fmt, ...);
 PUBLIC int vsprintf(char *buf, const char *fmt, va_list args);
 
 PUBLIC int sys_write(char *buf, int len, PCB *p_proc);
+PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PCB *p_proc);
 PUBLIC int sprintf(char *buf, const char *fmt, ...);
 
+
+
+PUBLIC void breakPoint();
 /**************** lib/assert.c ***************/
 PUBLIC void spin(char *func_name);
 PUBLIC void assertion_failure(char *exp,char *file,char* base_file, int line);
@@ -100,13 +104,14 @@ void TestC();
 
 /********************** kernel/proc.c *******************/
 
-void schedule();
+PUBLIC void schedule();
 
 /********************** kernel/syscall.asm *******************/
 
 PUBLIC void sys_Call();
-PUBLIC void getTicks();
+//PUBLIC void getTicks();
 PUBLIC void write(char *buf, int len);
+PUBLIC int printx(char *str);
 PUBLIC	int	sendrec(int function, int src_dest, Message* p_msg);
 /********************** kernel/keyboard.c *******************/
 

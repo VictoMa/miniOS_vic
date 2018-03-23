@@ -3,8 +3,6 @@
 #include "proto.h"
 #include "global.h"
 
-
-
 /*******************
  * in this file we define these functions
  * 
@@ -18,11 +16,9 @@
  * 
  * *****************/
 
-
-
-PUBLIC char* itoa(char* str, int num)
+PUBLIC char *itoa(char *str, int num)
 {
-    char* p = str;
+    char *p = str;
     char ch;
     int i;
     int flag = 0;
@@ -79,7 +75,6 @@ PUBLIC void delay(int time)
     }
 }
 
-
 /*****************************************************************************
  *				  ldt_seg_linear
  *****************************************************************************/
@@ -92,14 +87,12 @@ PUBLIC void delay(int time)
  * 
  * @return  The required linear address.
  *****************************************************************************/
-PUBLIC int ldt_seg_linear(PCB * p, int idx)
+PUBLIC int ldt_seg_linear(PCB *p, int idx)
 {
-	Descriptor * d = &p->ldt[idx];
-
-	return d->baseHigh << 24 | d->baseMid << 16 | d->baseLow;
+ //   DispStr("\n\n\n\n\nseg_linear");
+    Descriptor *d = &p->ldt[idx];
+    return ((d->baseHigh << 24) | (d->baseMid << 16) | (d->baseLow));
 }
-
-
 
 /*****************************************************************************
  *				  va2la
@@ -112,18 +105,35 @@ PUBLIC int ldt_seg_linear(PCB * p, int idx)
  * 
  * @return The linear address for the given virtual address.
  *****************************************************************************/
-PUBLIC void* va2la(int pid, void* va)
+PUBLIC void *va2la(int pid, void *va)
 {
-	PCB* p = &(procTable[pid]);
+    PCB *p = &(procTable[pid]);
+    //printf("pid_in:%d,pid:%d\n",pid,(p-procTable));
+    u32 seg_base = ldt_seg_linear(p, INDEX_LDT_RW);
+    u32 la = seg_base + (u32)va;
 
-	u32 seg_base = ldt_seg_linear(p, INDEX_LDT_RW);
-	u32 la = seg_base + (u32)va;
+    if (pid < (NR_TASK + NR_PROCESS))
+    {
 
-	if (pid < NR_TASK + NR_PROCESS) {
-		assert(la == (u32)va);
-	}
+        if (0)
+        { 
+            DispInt(seg_base);
+            DispStr("la:    ");
+            DispInt(la);
+            DispStr("va:    ");
+            DispInt(va);
+            //printf("seg_base:%x   la:%x   va:%x\n",seg_base,la,va);   DispStr("seg_base:    ");
+        }
 
-	return (void*)la;
+        assert(la == (u32)va);
+    }
+
+    return (void *)la;
 }
 
 
+PUBLIC void breakPoint() //set break point here
+{
+   // printf("breakpoint");
+    //printf("%s",str);
+}

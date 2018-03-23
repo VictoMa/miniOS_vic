@@ -98,6 +98,7 @@ void kernel_main()
     init8253();
     //   initKeyboard();
 
+ //   __asm__ __volatile__("ud2");
     restart();
 
     while (1)
@@ -106,18 +107,24 @@ void kernel_main()
     }
 }
 
-void TestA()
+PUBLIC void TestA()
 {
     //int i = 0;
+ //   breakPoint();
     while (1)
     {
-        printf("<Ticks:%x>", m_getTicks());
+        printf("<Ticks:%d>", m_getTicks());
+ //          __asm__ __volatile__("ud2");
+ //      DispStr("A            ");
+
         //printf("A");
-        milliDelay(2000);
+       // breakPoint();
+       // printf("123123123");
+        milliDelay(20000);
     }
 }
 
-void TestB()
+PUBLIC void TestB()
 {
     //int i = 1000;
     while (1)
@@ -128,7 +135,7 @@ void TestB()
     }
 }
 
-void TestC()
+PUBLIC void TestC()
 {
     //int i = 2000;
     while (1)

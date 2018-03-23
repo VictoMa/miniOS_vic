@@ -22,8 +22,20 @@ PUBLIC int printf(const char *fmt, ...)
     //vsprintf write args in defined format to buf
     //then return the length of writen contents (in byte)
     i = vsprintf(buf, fmt, arg);
-    write(buf, i);
 
+    buf[i]=0;
+
+if(0)
+{
+    DispStr("bufAddr:");
+    DispInt(buf);
+    DispStr("    buf:");
+    DispStr(buf);
+    DispStr("\n");
+}
+//    write(buf, i);
+//    breakPoint();
+    printx(buf);
     return i;
 }
 
@@ -151,7 +163,7 @@ PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PCB *p_proc)
 {
     const char *p;
     char ch;
-
+    //DispStr("\n\n\n\nSYS_PRINTX     ");
     char reenter_err[] = "? k_reenter is incorrect for unknown reason";
     reenter_err[0] = MAG_CH_PANIC;
 
@@ -169,18 +181,51 @@ PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PCB *p_proc)
 	 *   -# printx() is called in Ring 1~3
 	 *      - k_reenter == 0.
 	 */
+    //DispStr("\n\nreenter    ");
+    if(0)
+    {
+        DispStr("sys_printx-s-Addr:");
+        DispInt(s);
+        DispStr("     s:");
+        DispStr(s);
+        DispStr("\n");
+    }
+
     if (k_reenter == 0) /* printx() called in Ring<1~3> */
+    {
+
         p = va2la(proc2pid(p_proc), s);
+        if(0)
+        {
+
+        
+        DispStr("sys_printx-p-Addr:");
+        DispInt(p);
+        DispStr("     p:");
+        DispStr(p);
+        DispStr("\n");
+        
+        breakPoint(); 
+        }
+    }
     else if (k_reenter > 0) /* printx() called in Ring<0> */
-        p = s;
+    {
+      //   DispStr("\nreenter>0    ");
+         p = s;
+    }   
     else /* this should NOT happen */
+    {
+        //DispStr("\nreenter_err    ");
         p = reenter_err;
+    }
+        
 
     /**
 	 * @note if assertion fails in any TASK, the system will be halted;
 	 * if it fails in a USER PROC, it'll return like any normal syscall
 	 * does.
 	 */
+    
     if ((*p == MAG_CH_PANIC) ||
         (*p == MAG_CH_ASSERT && p_proc_ready < &procTable[NR_TASK]))
     {
@@ -207,14 +252,47 @@ PUBLIC int sys_printx(int _unused1, int _unused2, char *s, PCB *p_proc)
         __asm__ __volatile__("hlt");
     }
 
+
+
     while ((ch = *p++) != 0)
     {
         if (ch == MAG_CH_PANIC || ch == MAG_CH_ASSERT)
             continue; /* skip the magic char */
+        //DispStr("\ngoing outchar    \n");
+        //DispInt(outChar);
+//        breakPoint();
+        //
+        if(0)
+        {
+
+        
+        DispStr("ttyTable:");
+        DispInt(ttyTable);
+        DispStr("\n");
+
+                DispStr("p_proc:");
+        DispInt(p_proc);
+        DispStr("\n");
+
+                DispStr("p_proc->nrtty:");
+        DispInt(p_proc->nr_tty);
+        DispStr("\n");
+
+                DispStr("ttyTable[p_proc->nr_tty]:");
+        DispInt(&ttyTable[p_proc->nr_tty]);
+        DispStr("\n");
+        }
+ //       breakPoint();
+      //  char temp[3]={0,'\n',0};
+       // temp[0]=ch;
+        //DispStr(temp);
+
+        //breakPoint(); 
 
         outChar(ttyTable[p_proc->nr_tty].p_console, ch);
+       // breakPoint();
     }
-
+    
     return 0;
 }
 

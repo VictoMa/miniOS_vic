@@ -32,6 +32,11 @@ PUBLIC void taskTTY()
     //the first tty
     indexCurrentConsole = 0;
     selectConsole(indexCurrentConsole);
+    // printf("taskTTY\n");
+    if (0)
+    {
+        DispStr("\n\n\n\n\nin task tty");
+    }
     while (1)
     {
         for (p_tty = TTY_FIRST; p_tty < TTY_END; p_tty++)
@@ -88,6 +93,7 @@ PUBLIC void vga_processKey(TTY *p_tty, u32 realKey)
             {
                 //outChar(p_tty->p_console, rawCode - F6 + '0');
                 selectConsole(rawCode - F1);
+                indexCurrentConsole = rawCode - F1;
             }
             break;
         default:
@@ -178,6 +184,7 @@ PRIVATE void scrollUp()
 
 PUBLIC void outChar(Console *p_cons, char ch)
 {
+    //DispStr("\noutchar    ");
     u8 *p_video_mem = (u8 *)(V_MEM_BASE + p_cons->currentCursor * 2); //the vga op is in WORD
 
     //##startAddr maybe the memoryAddr????
@@ -220,7 +227,10 @@ PUBLIC void outChar(Console *p_cons, char ch)
     {
         scrollScreen(p_cons,DIRECTION_DOWN);
     }
+    
     flush(p_cons);
+    
+    selectConsole(indexCurrentConsole);
 }
 
 PUBLIC void selectConsole(int indexOfConsole) //console from 0 ~ NR_CONSOLES-1
@@ -278,6 +288,7 @@ PUBLIC void initConsole(TTY *p_tty)
         //output some chars
         outChar(p_tty->p_console, '#');
         outChar(p_tty->p_console, indexOfCurrentTTY + '0');
+        outChar(p_tty->p_console, '\n');
     }
 }
 

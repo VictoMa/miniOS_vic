@@ -15,7 +15,7 @@ CC = gcc
 ASMBFLAGS = -I boot/include/ 
 ASMKFLAGS = -I kernel/include/ -f elf
 CFLAGS = -I include/ -c -fno-builtin -m32 -fno-stack-protector -minline-all-stringops
-LDFLAGS = -s -Ttext $(ENTRYPOINT) -melf_i386
+LDFLAGS = -s -Ttext $(ENTRYPOINT) -melf_i386 -Map krnl.map
 
 
 

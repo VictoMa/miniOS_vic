@@ -34,6 +34,7 @@ PUBLIC int sys_sendrec(int function, int src_dest, Message *m, PCB *p)
 
     int ret = 0;
     int caller = proc2pid(p);
+    //printf("caller_pid:%d",caller);
     Message *mla = (Message *)va2la(caller, m);
     mla->source = caller;
 

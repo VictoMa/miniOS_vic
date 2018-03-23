@@ -284,15 +284,24 @@ exception:
 
 
 save:
-	pushad
+	pushad	
 	push ds
 	push es
 	push fs
 	push gs
 
+
+;;因为没有保存edx的值，导致printx的系统调用不能实现
+;在此处修改
+mov	esi,edx
+
+
 	mov	dx,ss
 	mov	ds,dx
 	mov	es,dx
+	mov fs,dx
+
+mov edx,esi
 
 	mov	esi,esp
 

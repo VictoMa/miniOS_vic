@@ -244,8 +244,8 @@ void assertion_failure(char *exp, char *file, char *base_file, int line);
 #define NR_TASK 2           //number of tasks
 #define NR_PROCESS 3
 
-#define FIRST_PROC	procTable[0]
-#define LAST_PROC	procTable[NR_TASK + NR_PROCESS - 1]
+#define FIRST_PROC	(procTable[0])
+#define LAST_PROC	(procTable[NR_TASK + NR_PROCESS - 1])
 
 #define INVALID_DRIVER	-20
 #define INTERRUPT	-10
@@ -290,7 +290,11 @@ enum msgType
 #define STACK_SIZE_TASK_TTY    0x8000
 #define STACK_SIZE_TASK_SYS		0x8000
 
-#define STACK_SIZE_TOTAL    (STACK_SIZE_TESTA*(NR_TASK+NR_PROCESS))
+#define STACK_SIZE_TOTAL	(STACK_SIZE_TASK_TTY + \
+				STACK_SIZE_TASK_SYS + \
+				STACK_SIZE_TESTA + \
+				STACK_SIZE_TESTB + \
+				STACK_SIZE_TESTC)
 
 /****************************************************************/
 

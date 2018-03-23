@@ -6,11 +6,18 @@
 PUBLIC void taskSYS()
 {
     Message msg;
+    //printf("in taskSys");
+    if (0)
+    {
+        DispStr("\n\n\n\n\nin task sys");
+    }
     while (1)
     {
+ //      printf("going send_recv");
         send_recv(RECEIVE, ANY, &msg);
         int src = msg.source;
 
+//        printf("going switch");
         switch (msg.type)
         {
         case GET_TICKS:
@@ -22,6 +29,8 @@ PUBLIC void taskSYS()
             break;
         }
     }
+    while(1)
+        ;
 }
 
 PUBLIC int m_getTicks()
